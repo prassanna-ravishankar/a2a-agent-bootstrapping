@@ -12,7 +12,7 @@ from a2a_agents.models import (
     TargetFormat,
     TaskType,
 )
-from modal_app import fastapi_app
+from a2a_agents.modal_app import fastapi_app
 
 
 @pytest.fixture

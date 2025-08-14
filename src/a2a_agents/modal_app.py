@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 
 # Import A2A applications (Pydantic AI native approach)
-from a2a_agents.a2a_apps import (
+from .a2a_apps import (
     research_a2a_app,
     code_a2a_app, 
     data_a2a_app,
@@ -18,10 +18,10 @@ from a2a_agents.a2a_apps import (
 )
 
 # Define the Modal image with all dependencies
-image = modal.Image.debian_slim(python_version="3.11").pip_install_from_pyproject_toml("pyproject.toml")
+image = modal.Image.debian_slim(python_version="3.11").pip_install_from_pyproject("pyproject.toml")
 
 # Create Modal app
-app_modal = modal.App(
+app = modal.App(
     "a2a-agent-bootstrapping", 
     image=image,
     secrets=[modal.Secret.from_name("gemini-api-key", required_keys=["GEMINI_API_KEY"])]
@@ -273,7 +273,8 @@ fastapi_app.mount("/planning", planning_a2a_app, name="planning_agent")
 
 
 # Deploy on Modal
-@app_modal.asgi_app()
+@app.function()
+@modal.asgi_app()
 def fastapi_app_modal():
     """Deploy the FastAPI app on Modal."""
     return fastapi_app
@@ -288,7 +289,7 @@ if __name__ == "__main__":
     print("🌐 Web Interface: http://localhost:8000/")
     
     uvicorn.run(
-        "modal_app:fastapi_app",
+        "a2a_agents.modal_app:fastapi_app",
         host="0.0.0.0",
         port=8000,
         reload=True,

@@ -89,7 +89,8 @@ This project implements **four specialized AI agents** that demonstrate the powe
 
 5. **Run the application locally**
    ```bash
-   python modal_app.py
+   # Run from the project root
+   python -m a2a_agents.modal_app
    ```
 
 6. **Open your browser**
@@ -120,7 +121,8 @@ This project implements **four specialized AI agents** that demonstrate the powe
 
 4. **Deploy the application**
    ```bash
-   modal deploy modal_app.py
+   # Deploy using module mode
+   modal deploy -m a2a_agents.modal_app
    ```
 
 ## 📡 A2A Protocol Usage
@@ -167,15 +169,16 @@ curl -X POST "http://localhost:8000/planning/" \
 
 ```
 a2a-agent-bootstrapping/
-├── modal_app.py              # Main FastAPI application + Modal deployment
-├── src/a2a_agents/
-│   ├── __init__.py           # Package exports and agent registry
-│   ├── models.py             # Pydantic models for A2A communication
-│   ├── a2a_apps.py          # A2A applications using agent.to_a2a()
-│   ├── research_agent.py     # Research Agent core logic
-│   ├── code_agent.py         # Code Agent core logic  
-│   ├── data_transformation_agent.py # Data Agent core logic
-│   └── planning_agent.py     # Planning Agent core logic
+├── src/
+│   └── a2a_agents/
+│       ├── __init__.py       # Package exports and agent registry
+│       ├── modal_app.py      # Main FastAPI application + Modal deployment
+│       ├── models.py         # Pydantic models for A2A communication
+│       ├── a2a_apps.py      # A2A applications using agent.to_a2a()
+│       ├── research_agent.py # Research Agent core logic
+│       ├── code_agent.py     # Code Agent core logic  
+│       ├── data_transformation_agent.py # Data Agent core logic
+│       └── planning_agent.py # Planning Agent core logic
 ├── tests/                    # Comprehensive test suite
 ├── pyproject.toml           # Project configuration and dependencies
 └── README.md               # This file

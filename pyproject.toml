@@ -27,6 +27,7 @@ dependencies = [
     "httpx>=0.28.0",
     "python-multipart>=0.0.17",
     "python-dotenv>=1.0.1",
+    "pydantic-ai-slim[a2a]>=0.7.1",
 ]
 
 [dependency-groups]

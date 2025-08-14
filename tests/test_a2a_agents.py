@@ -52,24 +52,6 @@ class TestApplicationEndpoints:
 class TestResearchAgent:
     """Test Research Agent functionality."""
 
-    def test_research_health_check(self, client):
-        """Test research agent health check."""
-        response = client.get("/research/health")
-        assert response.status_code == 200
-        data = response.json()
-        assert data["agent"] == "Research Agent 🕵️‍♂️"
-        assert data["status"] == "healthy"
-
-    def test_research_info_endpoint(self, client):
-        """Test research agent info endpoint."""
-        response = client.get("/research/info")
-        assert response.status_code == 200
-        data = response.json()
-        assert data["name"] == "Research Agent"
-        assert data["emoji"] == "🕵️‍♂️"
-        assert "input_format" in data
-        assert "output_format" in data
-
     def test_research_query_model(self):
         """Test research query model validation."""
         query = ResearchQuery(query="What is quantum computing?")
@@ -88,25 +70,6 @@ class TestResearchAgent:
 
 class TestCodeAgent:
     """Test Code Agent functionality."""
-
-    def test_code_health_check(self, client):
-        """Test code agent health check."""
-        response = client.get("/code/health")
-        assert response.status_code == 200
-        data = response.json()
-        assert data["agent"] == "Code Agent 💻"
-        assert data["status"] == "healthy"
-
-    def test_code_info_endpoint(self, client):
-        """Test code agent info endpoint."""
-        response = client.get("/code/info")
-        assert response.status_code == 200
-        data = response.json()
-        assert data["name"] == "Code Agent"
-        assert data["emoji"] == "💻"
-        assert "tasks" in data
-        assert "generate" in data["tasks"]
-        assert "review" in data["tasks"]
 
     def test_code_generation_model(self):
         """Test code generation model validation."""
@@ -128,33 +91,6 @@ class TestCodeAgent:
 
 class TestDataTransformationAgent:
     """Test Data Transformation Agent functionality."""
-
-    def test_data_health_check(self, client):
-        """Test data transformation agent health check."""
-        response = client.get("/data/health")
-        assert response.status_code == 200
-        data = response.json()
-        assert data["agent"] == "Data Transformation Agent 🔄"
-        assert data["status"] == "healthy"
-
-    def test_data_info_endpoint(self, client):
-        """Test data transformation agent info endpoint."""
-        response = client.get("/data/info")
-        assert response.status_code == 200
-        data = response.json()
-        assert data["name"] == "Data Transformation Agent"
-        assert data["emoji"] == "🔄"
-        assert "supported_input_formats" in data
-        assert "supported_output_formats" in data
-
-    def test_data_formats_endpoint(self, client):
-        """Test data formats endpoint."""
-        response = client.get("/data/formats")
-        assert response.status_code == 200
-        data = response.json()
-        assert "supported_formats" in data
-        assert "json" in data["supported_formats"]
-        assert "csv" in data["supported_formats"]
 
     def test_data_transformation_model(self):
         """Test data transformation model validation."""
@@ -185,24 +121,6 @@ class TestDataTransformationAgent:
 
 class TestPlanningAgent:
     """Test Logic and Planning Agent functionality."""
-
-    def test_planning_health_check(self, client):
-        """Test planning agent health check."""
-        response = client.get("/planning/health")
-        assert response.status_code == 200
-        data = response.json()
-        assert data["agent"] == "Logic and Planning Agent 🧠"
-        assert data["status"] == "healthy"
-
-    def test_planning_info_endpoint(self, client):
-        """Test planning agent info endpoint."""
-        response = client.get("/planning/info")
-        assert response.status_code == 200
-        data = response.json()
-        assert data["name"] == "Logic and Planning Agent"
-        assert data["emoji"] == "🧠"
-        assert "planning_approach" in data
-        assert "step_characteristics" in data
 
     def test_planning_model(self):
         """Test planning model validation."""
@@ -248,12 +166,12 @@ class TestAgentRegistry:
             assert "name" in agent_info
             assert "emoji" in agent_info
             assert "description" in agent_info
-            assert "router" in agent_info
+            assert "a2a_app" in agent_info
             assert "agent" in agent_info
             assert "function" in agent_info
             
-            # Check that router and function are callable/valid
-            assert hasattr(agent_info["router"], "prefix")  # FastAPI router
+            # Check that a2a_app and function are valid
+            assert agent_info["a2a_app"] is not None  # A2A ASGI app
             assert callable(agent_info["function"])
 
 

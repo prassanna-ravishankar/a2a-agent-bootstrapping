@@ -25,11 +25,13 @@ from .data_transformation_agent import transform_data, data_transformation_agent
 from .planning_agent import create_plan, planning_agent
 from .research_agent import research_query, research_agent
 
-# FastAPI routers
-from .code_agent_router import code_router
-from .data_transformation_router import data_transformation_router
-from .planning_agent_router import planning_router
-from .research_agent_router import research_router
+# A2A applications
+from .a2a_apps import (
+    research_a2a_app,
+    code_a2a_app,
+    data_a2a_app,
+    planning_a2a_app,
+)
 
 __version__ = "0.1.0"
 
@@ -39,7 +41,7 @@ AGENTS = {
         "name": "Research Agent",
         "emoji": "🕵️‍♂️",
         "description": "Answers complex queries by searching the web and synthesizing information",
-        "router": research_router,
+        "a2a_app": research_a2a_app,
         "agent": research_agent,
         "function": research_query,
     },
@@ -47,7 +49,7 @@ AGENTS = {
         "name": "Code Agent", 
         "emoji": "💻",
         "description": "Generates new code or reviews code from GitHub repositories",
-        "router": code_router,
+        "a2a_app": code_a2a_app,
         "agent": code_agent,
         "function": process_code_request,
     },
@@ -55,7 +57,7 @@ AGENTS = {
         "name": "Data Transformation Agent",
         "emoji": "🔄",
         "description": "Cleans and structures raw, messy data into specified formats",
-        "router": data_transformation_router,
+        "a2a_app": data_a2a_app,
         "agent": data_transformation_agent,
         "function": transform_data,
     },
@@ -63,7 +65,7 @@ AGENTS = {
         "name": "Logic and Planning Agent",
         "emoji": "🧠", 
         "description": "Breaks down high-level goals into logical, sequential plans",
-        "router": planning_router,
+        "a2a_app": planning_a2a_app,
         "agent": planning_agent,
         "function": create_plan,
     }
@@ -86,6 +88,6 @@ __all__ = [
     "process_code_request", "code_agent", 
     "transform_data", "data_transformation_agent",
     "create_plan", "planning_agent",
-    # Routers
-    "research_router", "code_router", "data_transformation_router", "planning_router",
+    # A2A Applications
+    "research_a2a_app", "code_a2a_app", "data_a2a_app", "planning_a2a_app",
 ]

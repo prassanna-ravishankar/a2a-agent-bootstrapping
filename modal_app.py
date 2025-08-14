@@ -9,18 +9,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 
-# Import A2A applications and legacy routers for comparison
+# Import A2A applications (Pydantic AI native approach)
 from a2a_agents.a2a_apps import (
     research_a2a_app,
     code_a2a_app, 
     data_a2a_app,
     planning_a2a_app,
 )
-# Keep legacy routers for health/info endpoints
-from a2a_agents.code_agent_router import code_router
-from a2a_agents.data_transformation_router import data_transformation_router
-from a2a_agents.planning_agent_router import planning_router
-from a2a_agents.research_agent_router import research_router
 
 # Define the Modal image with all dependencies
 image = modal.Image.debian_slim(python_version="3.11").pip_install_from_pyproject_toml("pyproject.toml")
@@ -155,7 +150,7 @@ async def root():
                     <div class="agent-desc">
                         Answers complex queries by searching the web and synthesizing information from multiple sources.
                     </div>
-                    <strong>Endpoint:</strong> <code>/research/query</code>
+                    <strong>A2A Endpoint:</strong> <code>/research/*</code>
                 </div>
                 
                 <div class="agent">
@@ -163,7 +158,7 @@ async def root():
                     <div class="agent-desc">
                         Generates new code from descriptions or reviews existing code from GitHub repositories.
                     </div>
-                    <strong>Endpoints:</strong> <code>/code/generate</code>, <code>/code/review</code>
+                    <strong>A2A Endpoint:</strong> <code>/code/*</code>
                 </div>
                 
                 <div class="agent">
@@ -171,7 +166,7 @@ async def root():
                     <div class="agent-desc">
                         Cleans and structures raw, messy data into well-organized formats like JSON, CSV, XML.
                     </div>
-                    <strong>Endpoint:</strong> <code>/data/transform</code>
+                    <strong>A2A Endpoint:</strong> <code>/data/*</code>
                 </div>
                 
                 <div class="agent">
@@ -179,7 +174,7 @@ async def root():
                     <div class="agent-desc">
                         Breaks down high-level goals into logical, sequential plans of actionable steps.
                     </div>
-                    <strong>Endpoint:</strong> <code>/planning/plan</code>
+                    <strong>A2A Endpoint:</strong> <code>/planning/*</code>
                 </div>
             </div>
             
@@ -191,9 +186,8 @@ async def root():
             </div>
             
             <div style="margin-top: 2rem; text-align: center; opacity: 0.8; font-size: 0.9rem;">
-                <p><strong>Two API Approaches Available:</strong></p>
-                <p>🔧 <strong>Custom APIs:</strong> /research/*, /code/*, /data/*, /planning/*</p>
-                <p>🚀 <strong>A2A Protocol:</strong> /a2a/research/*, /a2a/code/*, /a2a/data/*, /a2a/planning/*</p>
+                <p><strong>🚀 Native A2A Protocol Implementation</strong></p>
+                <p>All agents exposed via Pydantic AI's built-in A2A protocol compliance</p>
             </div>
         </div>
     </body>
@@ -211,6 +205,7 @@ async def health_check():
             "status": "healthy",
             "service": "A2A Agent Bootstrapping",
             "version": "0.1.0",
+            "protocol": "A2A (Agent-to-Agent)",
             "agents": {
                 "research": "🕵️‍♂️ Research Agent - /research/*",
                 "code": "💻 Code Agent - /code/*", 
@@ -219,15 +214,8 @@ async def health_check():
             },
             "endpoints": {
                 "docs": "/docs - API Documentation",
-                "redoc": "/redoc - Alternative API Docs",
                 "health": "/health - This health check",
                 "agents": "/agents - List all agents"
-            },
-            "a2a_endpoints": {
-                "research": "/a2a/research/* - Native A2A research agent",
-                "code": "/a2a/code/* - Native A2A code agent",
-                "data": "/a2a/data/* - Native A2A data transformation agent", 
-                "planning": "/a2a/planning/* - Native A2A planning agent"
             }
         }
     )
@@ -245,28 +233,32 @@ async def list_agents():
                     "emoji": "🕵️‍♂️",
                     "prefix": "/research",
                     "description": "Web search and information synthesis",
-                    "key_endpoints": ["/research/query", "/research/health", "/research/info"]
+                    "protocol": "A2A via Pydantic AI",
+                    "capabilities": ["web_search", "information_synthesis", "source_citation"]
                 },
                 {
                     "name": "Code Agent", 
                     "emoji": "💻",
                     "prefix": "/code",
                     "description": "Code generation and GitHub repository review",
-                    "key_endpoints": ["/code/generate", "/code/review", "/code/health", "/code/info"]
+                    "protocol": "A2A via Pydantic AI",
+                    "capabilities": ["code_generation", "repository_analysis", "issue_detection"]
                 },
                 {
                     "name": "Data Transformation Agent",
                     "emoji": "🔄", 
                     "prefix": "/data",
                     "description": "Data cleaning and format transformation",
-                    "key_endpoints": ["/data/transform", "/data/formats", "/data/health", "/data/info"]
+                    "protocol": "A2A via Pydantic AI",
+                    "capabilities": ["data_parsing", "format_conversion", "data_cleaning"]
                 },
                 {
                     "name": "Logic and Planning Agent",
                     "emoji": "🧠",
                     "prefix": "/planning", 
                     "description": "Goal breakdown and strategic planning",
-                    "key_endpoints": ["/planning/plan", "/planning/analyze", "/planning/health", "/planning/info"]
+                    "protocol": "A2A via Pydantic AI", 
+                    "capabilities": ["goal_analysis", "task_decomposition", "strategic_planning"]
                 }
             ]
         }
@@ -274,16 +266,10 @@ async def list_agents():
 
 
 # Mount A2A applications (Pydantic AI's native approach)
-fastapi_app.mount("/a2a/research", research_a2a_app, name="research_a2a")
-fastapi_app.mount("/a2a/code", code_a2a_app, name="code_a2a")
-fastapi_app.mount("/a2a/data", data_a2a_app, name="data_a2a") 
-fastapi_app.mount("/a2a/planning", planning_a2a_app, name="planning_a2a")
-
-# Include legacy routers for health/info endpoints
-fastapi_app.include_router(research_router)
-fastapi_app.include_router(code_router)
-fastapi_app.include_router(data_transformation_router)
-fastapi_app.include_router(planning_router)
+fastapi_app.mount("/research", research_a2a_app, name="research_agent")
+fastapi_app.mount("/code", code_a2a_app, name="code_agent")
+fastapi_app.mount("/data", data_a2a_app, name="data_agent") 
+fastapi_app.mount("/planning", planning_a2a_app, name="planning_agent")
 
 
 # Deploy on Modal

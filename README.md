@@ -123,18 +123,20 @@ This project implements **four specialized AI agents** that demonstrate the powe
    modal deploy modal_app.py
    ```
 
-## 📡 API Usage Examples
+## 📡 A2A Protocol Usage
+
+All agents are exposed via **Pydantic AI's native A2A protocol**, providing standardized agent-to-agent communication:
 
 ### Research Agent
 ```bash
-curl -X POST "http://localhost:8000/research/query" \
+curl -X POST "http://localhost:8000/research/" \
   -H "Content-Type: application/json" \
   -d '{"query": "What are the latest developments in quantum computing?"}'
 ```
 
-### Code Agent - Generation
+### Code Agent
 ```bash
-curl -X POST "http://localhost:8000/code/generate" \
+curl -X POST "http://localhost:8000/code/" \
   -H "Content-Type: application/json" \
   -d '{
     "task": "generate",
@@ -142,20 +144,9 @@ curl -X POST "http://localhost:8000/code/generate" \
   }'
 ```
 
-### Code Agent - Review
-```bash
-curl -X POST "http://localhost:8000/code/review" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "task": "review",
-    "github_url": "https://github.com/user/repo",
-    "branch": "main"
-  }'
-```
-
 ### Data Transformation Agent
 ```bash
-curl -X POST "http://localhost:8000/data/transform" \
+curl -X POST "http://localhost:8000/data/" \
   -H "Content-Type: application/json" \
   -d '{
     "data": "name,age,city\nJohn,25,New York\nJane,30,Boston",
@@ -165,10 +156,12 @@ curl -X POST "http://localhost:8000/data/transform" \
 
 ### Planning Agent
 ```bash
-curl -X POST "http://localhost:8000/planning/plan" \
+curl -X POST "http://localhost:8000/planning/" \
   -H "Content-Type: application/json" \
   -d '{"goal": "Launch a mobile app for task management"}'
 ```
+
+> **Note**: All endpoints follow the A2A protocol specification, enabling seamless agent-to-agent communication across different systems.
 
 ## 🏗️ Project Architecture
 
@@ -178,14 +171,11 @@ a2a-agent-bootstrapping/
 ├── src/a2a_agents/
 │   ├── __init__.py           # Package exports and agent registry
 │   ├── models.py             # Pydantic models for A2A communication
+│   ├── a2a_apps.py          # A2A applications using agent.to_a2a()
 │   ├── research_agent.py     # Research Agent core logic
 │   ├── code_agent.py         # Code Agent core logic  
 │   ├── data_transformation_agent.py # Data Agent core logic
-│   ├── planning_agent.py     # Planning Agent core logic
-│   ├── research_agent_router.py     # Research Agent API router
-│   ├── code_agent_router.py         # Code Agent API router
-│   ├── data_transformation_router.py # Data Agent API router
-│   └── planning_agent_router.py     # Planning Agent API router
+│   └── planning_agent.py     # Planning Agent core logic
 ├── tests/                    # Comprehensive test suite
 ├── pyproject.toml           # Project configuration and dependencies
 └── README.md               # This file
@@ -193,15 +183,15 @@ a2a-agent-bootstrapping/
 
 ### Design Principles
 
-1. **Single Unified Application**: All agents are deployed together as one FastAPI service for efficient resource sharing and simplified CI/CD.
+1. **Pure A2A Protocol Implementation**: All agents are exposed via Pydantic AI's native `agent.to_a2a()` method for true protocol compliance.
 
-2. **Modular Agent Design**: Each agent is self-contained with its own logic, models, and router, making the system highly maintainable and extensible.
+2. **Modular Agent Design**: Each agent is self-contained with its own logic and A2A application, making the system highly maintainable and extensible.
 
-3. **A2A Protocol Ready**: Built with pydantic-ai for seamless A2A communication between agents.
+3. **Single Unified Deployment**: All agents are deployed together as one FastAPI service for efficient resource sharing and simplified CI/CD.
 
-4. **Robust Error Handling**: Comprehensive error handling and fallback mechanisms ensure reliability.
+4. **Protocol-First Approach**: Built specifically for agent-to-agent communication, not human-facing APIs.
 
-5. **Comprehensive Documentation**: Every endpoint includes health checks, info endpoints, and detailed API documentation.
+5. **Modal.com Integration**: Secure secrets management and serverless deployment for production readiness.
 
 ## 🧪 Development Commands
 
@@ -232,9 +222,9 @@ task format
 The project includes comprehensive tests covering:
 
 - **Unit Tests**: Individual agent functions and models
-- **Integration Tests**: FastAPI endpoints and full request/response cycles  
+- **A2A Protocol Tests**: Native Pydantic AI agent functionality
 - **Structure Tests**: Agent registry, model validation, and package organization
-- **Health Checks**: All agent health and info endpoints
+- **Application Tests**: Main FastAPI application and core endpoints
 
 Run tests with:
 ```bash
@@ -250,28 +240,29 @@ task coverage
 
 ## 🌟 Key Features
 
+### ✅ A2A Protocol Compliant
+- Native Pydantic AI `agent.to_a2a()` implementation
+- Standardized agent-to-agent communication
+- Interoperable with other A2A systems
+- Protocol-first design approach
+
 ### ✅ Production Ready
 - Comprehensive error handling and validation
-- Health checks for all services
+- Modal secrets for secure API key management
 - Structured logging and monitoring ready
 - Comprehensive test coverage
 
 ### ✅ Scalable Architecture  
 - Modular agent design for easy extension
 - Single deployment model for efficiency
-- A2A protocol ready for multi-agent workflows
 - Clean separation of concerns
+- Serverless scaling with Modal.com
 
-### ✅ Developer Friendly
-- Complete API documentation with Swagger UI
+### ✅ Developer Experience
 - Type hints throughout the codebase
-- Comprehensive test suite
+- Comprehensive test suite covering A2A functionality
 - Easy local development setup
-
-### ✅ Cloud Native
-- Modal.com deployment for serverless scaling
-- Environment-based configuration
-- Async/await throughout for performance
+- Clear project structure and documentation
 
 ## 📊 Agent Capabilities Matrix
 

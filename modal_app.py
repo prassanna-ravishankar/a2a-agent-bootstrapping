@@ -9,10 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 
 # Import all agent routers
-from src.a2a_agents.code_agent_router import code_router
-from src.a2a_agents.data_transformation_router import data_transformation_router
-from src.a2a_agents.planning_agent_router import planning_router
-from src.a2a_agents.research_agent_router import research_router
+from a2a_agents.code_agent_router import code_router
+from a2a_agents.data_transformation_router import data_transformation_router
+from a2a_agents.planning_agent_router import planning_router
+from a2a_agents.research_agent_router import research_router
 
 # Define the Modal image with all dependencies
 image = modal.Image.debian_slim(python_version="3.11").pip_install_from_pyproject_toml("pyproject.toml")

@@ -3,8 +3,8 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from src.a2a_agents import AGENTS
-from src.a2a_agents.models import (
+from a2a_agents import AGENTS
+from a2a_agents.models import (
     CodeGenerationRequest,
     DataTransformationRequest,
     PlanningRequest,
@@ -78,7 +78,7 @@ class TestResearchAgent:
     @pytest.mark.asyncio
     async def test_research_query_function(self):
         """Test research query function basic structure."""
-        from src.a2a_agents.research_agent import research_query
+        from a2a_agents.research_agent import research_query
         
         query = ResearchQuery(query="Python programming")
         # Note: This would require API keys in a real test environment
@@ -120,7 +120,7 @@ class TestCodeAgent:
     @pytest.mark.asyncio
     async def test_code_agent_function(self):
         """Test code agent function basic structure."""
-        from src.a2a_agents.code_agent import process_code_request
+        from a2a_agents.code_agent import process_code_request
         
         # Test that the function exists and can be imported
         assert callable(process_code_request)
@@ -168,7 +168,7 @@ class TestDataTransformationAgent:
     @pytest.mark.asyncio
     async def test_data_transformation_function(self):
         """Test data transformation function basic structure."""
-        from src.a2a_agents.data_transformation_agent import transform_data
+        from a2a_agents.data_transformation_agent import transform_data
         
         # Test that the function exists and can be imported
         assert callable(transform_data)
@@ -212,14 +212,14 @@ class TestPlanningAgent:
     @pytest.mark.asyncio
     async def test_planning_function(self):
         """Test planning function basic structure."""
-        from src.a2a_agents.planning_agent import create_plan
+        from a2a_agents.planning_agent import create_plan
         
         # Test that the function exists and can be imported
         assert callable(create_plan)
 
     def test_goal_complexity_analyzer(self):
         """Test goal complexity analysis utility."""
-        from src.a2a_agents.planning_agent import analyze_goal_complexity
+        from a2a_agents.planning_agent import analyze_goal_complexity
         
         simple_goal = "Write a blog post"
         complex_goal = "Develop a comprehensive enterprise software solution with microservices architecture"
@@ -267,7 +267,7 @@ class TestModels:
 
     def test_model_imports(self):
         """Test that all models can be imported from the package."""
-        from src.a2a_agents import (
+        from a2a_agents import (
             CodeAgentRequest,
             DataTransformationRequest, 
             PlanningRequest,

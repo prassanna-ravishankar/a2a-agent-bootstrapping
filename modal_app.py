@@ -4,11 +4,19 @@ import os
 from contextlib import asynccontextmanager
 
 import modal
+from pydantic_ai.models import KnownModelName
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 
-# Import all agent routers
+# Import A2A applications and legacy routers for comparison
+from a2a_agents.a2a_apps import (
+    research_a2a_app,
+    code_a2a_app, 
+    data_a2a_app,
+    planning_a2a_app,
+)
+# Keep legacy routers for health/info endpoints
 from a2a_agents.code_agent_router import code_router
 from a2a_agents.data_transformation_router import data_transformation_router
 from a2a_agents.planning_agent_router import planning_router
@@ -18,7 +26,11 @@ from a2a_agents.research_agent_router import research_router
 image = modal.Image.debian_slim(python_version="3.11").pip_install_from_pyproject_toml("pyproject.toml")
 
 # Create Modal app
-app_modal = modal.App("a2a-agent-bootstrapping", image=image)
+app_modal = modal.App(
+    "a2a-agent-bootstrapping", 
+    image=image,
+    secrets=[modal.Secret.from_name("gemini-api-key", required_keys=["GEMINI_API_KEY"])]
+)
 
 
 @asynccontextmanager
@@ -27,6 +39,15 @@ async def lifespan(app: FastAPI):
     # Startup
     print("🚀 A2A Agent Bootstrapping starting up...")
     print("🔧 Initializing agents...")
+    
+    # Validate environment variables
+    gemini_key = os.getenv("GEMINI_API_KEY")
+    if not gemini_key:
+        print("⚠️  Warning: GEMINI_API_KEY not found in environment")
+    else:
+        print("✅ Gemini API key configured")
+    
+    print("🎯 All agents ready for A2A communication")
     yield
     # Shutdown
     print("⏹️ A2A Agent Bootstrapping shutting down...")
@@ -165,7 +186,14 @@ async def root():
             <div class="links">
                 <a href="/docs">📚 API Documentation</a>
                 <a href="/health">🔍 Health Check</a>
+                <a href="/agents">🤖 Agent List</a>
                 <a href="https://github.com/prassanna-ravishankar/a2a-agent-bootstrapping">⭐ GitHub</a>
+            </div>
+            
+            <div style="margin-top: 2rem; text-align: center; opacity: 0.8; font-size: 0.9rem;">
+                <p><strong>Two API Approaches Available:</strong></p>
+                <p>🔧 <strong>Custom APIs:</strong> /research/*, /code/*, /data/*, /planning/*</p>
+                <p>🚀 <strong>A2A Protocol:</strong> /a2a/research/*, /a2a/code/*, /a2a/data/*, /a2a/planning/*</p>
             </div>
         </div>
     </body>
@@ -192,7 +220,14 @@ async def health_check():
             "endpoints": {
                 "docs": "/docs - API Documentation",
                 "redoc": "/redoc - Alternative API Docs",
-                "health": "/health - This health check"
+                "health": "/health - This health check",
+                "agents": "/agents - List all agents"
+            },
+            "a2a_endpoints": {
+                "research": "/a2a/research/* - Native A2A research agent",
+                "code": "/a2a/code/* - Native A2A code agent",
+                "data": "/a2a/data/* - Native A2A data transformation agent", 
+                "planning": "/a2a/planning/* - Native A2A planning agent"
             }
         }
     )
@@ -238,7 +273,13 @@ async def list_agents():
     )
 
 
-# Include all agent routers with their prefixes
+# Mount A2A applications (Pydantic AI's native approach)
+fastapi_app.mount("/a2a/research", research_a2a_app, name="research_a2a")
+fastapi_app.mount("/a2a/code", code_a2a_app, name="code_a2a")
+fastapi_app.mount("/a2a/data", data_a2a_app, name="data_a2a") 
+fastapi_app.mount("/a2a/planning", planning_a2a_app, name="planning_a2a")
+
+# Include legacy routers for health/info endpoints
 fastapi_app.include_router(research_router)
 fastapi_app.include_router(code_router)
 fastapi_app.include_router(data_transformation_router)

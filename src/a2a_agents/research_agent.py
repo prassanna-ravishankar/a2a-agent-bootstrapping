@@ -70,11 +70,12 @@ def validate_url(url_string: str) -> bool:
         return False
 
 
-# Create the research agent
+# Create the research agent with better configuration
 research_agent = Agent(
     'gemini-1.5-flash',
     system_prompt=RESEARCH_SYSTEM_PROMPT,
     deps_type=RunContext,
+    retries=2,  # Add retries for reliability
 )
 
 
@@ -118,9 +119,10 @@ async def research_query(query: ResearchQuery) -> ResearchResult:
     Returns:
         Research results with summary and source URLs
     """
-    # Run the agent with the query
-    result = await research_agent.run(
-        f"""Please research the following query: "{query.query}"
+    try:
+        # Run the agent with the query
+        result = await research_agent.run(
+            f"""Please research the following query: "{query.query}"
 
 Instructions:
 1. Use the web_search tool to find relevant information
@@ -129,7 +131,14 @@ Instructions:
 4. List all the source URLs you used in your research
 
 Your response should be well-structured and informative."""
-    )
+        )
+    except Exception as e:
+        # Graceful degradation if agent fails
+        print(f"Research agent error: {e}")
+        return ResearchResult(
+            summary=f"Unable to complete research for query: '{query.query}'. Error: {str(e)}",
+            source_urls=[]
+        )
     
     # Extract source URLs from the agent's context
     # This is a simplified approach - in production, you'd want more sophisticated URL extraction

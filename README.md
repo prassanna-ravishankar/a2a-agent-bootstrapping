@@ -109,9 +109,13 @@ This project implements **four specialized AI agents** that demonstrate the powe
    modal token new
    ```
 
-3. **Set up secrets**
+3. **Set up secrets (CRITICAL for security)**
    ```bash
-   modal secret create gemini-api-key GEMINI_API_KEY=your_key_here
+   # Create Modal secret for Gemini API key
+   modal secret create gemini-api-key GEMINI_API_KEY=your_actual_gemini_key_here
+   
+   # Verify the secret was created
+   modal secret list
    ```
 
 4. **Deploy the application**

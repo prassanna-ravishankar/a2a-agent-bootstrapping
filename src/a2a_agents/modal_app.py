@@ -18,7 +18,11 @@ from .a2a_apps import (
 )
 
 # Define the Modal image with all dependencies
-image = modal.Image.debian_slim(python_version="3.11").pip_install_from_pyproject("pyproject.toml")
+image = (
+    modal.Image.debian_slim(python_version="3.11")
+    .apt_install("git")  # Required for GitPython in code_agent
+    .pip_install_from_pyproject("pyproject.toml")
+)
 
 # Create Modal app
 app = modal.App(
@@ -34,6 +38,9 @@ async def lifespan(app: FastAPI):
     # Startup
     print("🚀 A2A Agent Bootstrapping starting up...")
     print("🔧 Initializing agents...")
+    
+    # Set GitPython environment variable to quiet refresh messages
+    os.environ.setdefault("GIT_PYTHON_REFRESH", "quiet")
     
     # Validate environment variables
     gemini_key = os.getenv("GEMINI_API_KEY")

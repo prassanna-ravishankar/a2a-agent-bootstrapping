@@ -3,6 +3,7 @@
 
 import asyncio
 import os
+import pytest
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -10,6 +11,7 @@ load_dotenv()
 from a2a_agents.agents.research import research_agent
 from pydantic_ai import RunContext
 
+@pytest.mark.asyncio
 async def test_research_with_search():
     """Test research agent with explicit search instruction."""
     

@@ -3,6 +3,7 @@
 
 import asyncio
 import os
+import pytest
 from dotenv import load_dotenv
 
 # Load environment
@@ -13,6 +14,7 @@ from a2a_agents.agents.research import research_agent
 from pydantic_ai import RunContext
 
 
+@pytest.mark.asyncio
 async def test_direct_agent():
     """Test the research agent directly without A2A protocol."""
     

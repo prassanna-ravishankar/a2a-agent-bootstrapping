@@ -29,7 +29,9 @@ def data_agent_app():
     from ..config import config
     
     config.setup_api_keys()
-    return data_transformation_agent.to_a2a()
+    return data_transformation_agent.to_a2a(
+        description="An AI agent specialized in data analysis, processing, visualization, and insights generation from various data sources"
+    )
 
 if __name__ == "__main__":
     import uvicorn

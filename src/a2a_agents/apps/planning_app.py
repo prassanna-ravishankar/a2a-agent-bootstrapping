@@ -29,7 +29,9 @@ def planning_agent_app():
     from ..config import config
     
     config.setup_api_keys()
-    return planning_agent.to_a2a()
+    return planning_agent.to_a2a(
+        description="An AI agent specialized in project planning, task management, strategic planning, and workflow optimization"
+    )
 
 if __name__ == "__main__":
     import uvicorn

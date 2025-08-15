@@ -29,15 +29,16 @@ image = (
 )
 @modal.asgi_app()
 def research_agent_app():
-    """Deploy Research Agent - Pydantic AI handles everything!"""
+    """Deploy Research Agent with custom A2A metadata!"""
     from ..agents.research import research_agent
     from ..config import config
     
     config.setup_api_keys()
     
-    # That's it! Pydantic AI's to_a2a() returns a complete ASGI app
-    # with all A2A endpoints, docs, agent cards, etc.
-    return research_agent.to_a2a()
+    # Use Pydantic AI's to_a2a with custom description
+    return research_agent.to_a2a(
+        description="An AI agent specialized in research tasks, information gathering, and analysis using advanced search and synthesis capabilities"
+    )
 
 
 # For local development and testing

@@ -29,7 +29,9 @@ def code_agent_app():
     from ..config import config
     
     config.setup_api_keys()
-    return code_agent.to_a2a()
+    return code_agent.to_a2a(
+        description="An AI agent specialized in code generation, review, debugging, and software development assistance"
+    )
 
 if __name__ == "__main__":
     import uvicorn

@@ -5,6 +5,7 @@ from typing import List
 
 from pydantic_ai import Agent, RunContext
 
+from .config import MODEL_NAME
 from .models import PlanningRequest, PlanningResult
 
 
@@ -221,7 +222,7 @@ def validate_and_improve_steps(steps: List[str]) -> List[str]:
 
 # Create the planning agent
 planning_agent = Agent(
-    'gemini-1.5-flash',
+    MODEL_NAME,
     system_prompt=PLANNING_SYSTEM_PROMPT,
     deps_type=RunContext,
 )

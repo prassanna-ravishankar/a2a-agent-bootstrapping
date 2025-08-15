@@ -11,6 +11,7 @@ import httpx
 import yaml
 from pydantic_ai import Agent, RunContext
 
+from .config import MODEL_NAME
 from .models import DataTransformationRequest, DataTransformationResult, TargetFormat
 
 
@@ -314,7 +315,7 @@ def transform_to_html(data: Dict[str, Any]) -> str:
 
 # Create the data transformation agent
 data_transformation_agent = Agent(
-    'gemini-1.5-flash',
+    MODEL_NAME,
     system_prompt=DATA_TRANSFORMATION_SYSTEM_PROMPT,
     deps_type=RunContext,
 )

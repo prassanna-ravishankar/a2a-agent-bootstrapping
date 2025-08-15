@@ -1,0 +1,73 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+This is an A2A (Agent-to-Agent) protocol implementation showcasing four specialized AI agents built with pydantic-ai. The agents communicate via the native A2A protocol and are deployed as a single FastAPI service on Modal.com.
+
+## Architecture
+
+The project implements four distinct agents, each with specific capabilities:
+- **Research Agent**: Web search and information synthesis using DuckDuckGo
+- **Code Agent**: Code generation and GitHub repository analysis using GitPython
+- **Data Transformation Agent**: Data cleaning and format conversion (JSON/CSV/XML/YAML)
+- **Planning Agent**: Strategic planning and goal decomposition
+
+All agents are exposed via Pydantic AI's native `agent.to_a2a()` method for protocol compliance. The agents are mounted as ASGI sub-applications on a FastAPI server at `/research`, `/code`, `/data`, and `/planning` endpoints.
+
+## Key Development Commands
+
+```bash
+# Run application locally
+task run
+# or directly
+python -m a2a_agents.modal_app
+
+# Run tests
+task tests
+# or with coverage
+task coverage
+
+# Code quality
+task lint      # Fix linting issues with ruff
+task format    # Format code with ruff
+task type      # Type checking with ty
+
+# Deploy to Modal.com
+modal deploy -m a2a_agents.modal_app
+```
+
+## Testing
+
+Run specific test files:
+```bash
+pytest tests/test_a2a_agents.py -v
+```
+
+## Environment Setup
+
+Required environment variable:
+- `GEMINI_API_KEY`: Google AI Studio API key for Gemini model access
+
+For Modal deployment, ensure the secret is configured:
+```bash
+modal secret create gemini-api-key GEMINI_API_KEY=your_key_here
+```
+
+## Code Organization
+
+- `src/a2a_agents/`: Main package directory
+  - `models.py`: Pydantic models for agent inputs/outputs
+  - `*_agent.py`: Individual agent implementations with core logic
+  - `a2a_apps.py`: Converts agents to A2A ASGI applications
+  - `modal_app.py`: FastAPI server and Modal deployment configuration
+  - `__init__.py`: Package exports and agent registry (AGENTS dict)
+
+## Important Implementation Details
+
+1. **A2A Protocol**: All agents use pydantic-ai's `to_a2a()` method for native protocol compliance
+2. **GitPython**: The code agent requires git to be installed (handled in Modal image)
+3. **Error Handling**: Each agent has built-in error handling returning structured error responses
+4. **Model Configuration**: Uses Gemini free tier (`gemini-2.0-flash-exp`) as the LLM backend
+5. **CORS**: Enabled for all origins to support cross-domain A2A communication

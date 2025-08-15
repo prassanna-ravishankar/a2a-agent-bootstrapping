@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 import git
 from pydantic_ai import Agent, RunContext
 
+from .config import MODEL_NAME
 from .models import (
     CodeAgentRequest,
     CodeAgentResult,
@@ -194,7 +195,7 @@ File: {code_file.relative_to(repo_path)}
 
 # Create the code agent
 code_agent = Agent(
-    'gemini-1.5-flash',
+    MODEL_NAME,
     system_prompt=CODE_SYSTEM_PROMPT,
     deps_type=RunContext,
 )

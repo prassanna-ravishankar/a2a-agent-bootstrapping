@@ -4,15 +4,19 @@ import os
 from contextlib import asynccontextmanager
 
 import modal
-from pydantic_ai.models import KnownModelName
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
+from pydantic_ai.models import KnownModelName
 
-# Import A2A applications (Pydantic AI native approach)
+# Set up configuration and API key compatibility
+from .config import config
+config.setup_api_keys()
+
+# Import A2A applications (FastA2A approach)
 from .a2a_apps import (
     research_a2a_app,
-    code_a2a_app, 
+    code_a2a_app,
     data_a2a_app,
     planning_a2a_app,
 )
@@ -34,7 +38,7 @@ app = modal.App(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan manager."""
+    """Application lifespan manager that handles FastA2A TaskManager lifecycle."""
     # Startup
     print("🚀 A2A Agent Bootstrapping starting up...")
     print("🔧 Initializing agents...")
@@ -48,9 +52,43 @@ async def lifespan(app: FastAPI):
         print("⚠️  Warning: GEMINI_API_KEY not found in environment")
     else:
         print("✅ Gemini API key configured")
+        # Set GOOGLE_API_KEY for Pydantic AI compatibility
+        os.environ["GOOGLE_API_KEY"] = gemini_key
     
-    print("🎯 All agents ready for A2A communication")
-    yield
+    print("🔧 Starting FastA2A TaskManagers...")
+    
+    # Start all FastA2A TaskManagers in parallel to avoid deadlock
+    # Strategy from web search: Avoid nested async context managers that can cause deadlocks
+    task_managers = [
+        research_a2a_app.task_manager,
+        code_a2a_app.task_manager, 
+        data_a2a_app.task_manager,
+        planning_a2a_app.task_manager
+    ]
+    
+    # Start all TaskManagers in parallel using asyncio.gather for better concurrency
+    import asyncio
+    
+    async def start_task_manager(tm):
+        """Start a single TaskManager safely."""
+        await tm.__aenter__()
+        return tm
+    
+    try:
+        # Start all TaskManagers concurrently to avoid deadlock
+        started_managers = await asyncio.gather(*[start_task_manager(tm) for tm in task_managers])
+        print("✅ All FastA2A TaskManagers started successfully")
+        print("🎯 All agents ready for A2A communication")
+        
+        yield
+        
+    finally:
+        # Clean shutdown of all TaskManagers
+        print("🔧 Shutting down TaskManagers...")
+        shutdown_tasks = [tm.__aexit__(None, None, None) for tm in started_managers]
+        await asyncio.gather(*shutdown_tasks, return_exceptions=True)
+        print("✅ All TaskManagers shut down")
+    
     # Shutdown
     print("⏹️ A2A Agent Bootstrapping shutting down...")
 
@@ -228,6 +266,87 @@ async def health_check():
     )
 
 
+@fastapi_app.get("/.well-known/agent.json")
+async def root_agent_card():
+    """Root agent card that explains this is a multi-agent system."""
+    return JSONResponse(
+        content={
+            "error": "Multi-agent system - no single root agent",
+            "message": "This deployment contains 4 independent A2A agents. Use /.well-known/agents to discover them.",
+            "documentation": "FastA2A docs are not supported for multi-agent systems. Use individual agent cards instead.",
+            "agent_directory_url": "/.well-known/agents",
+            "independent_agents": [
+                {
+                    "name": "Research Agent",
+                    "url": "/research",
+                    "agent_card": "/research/.well-known/agent.json"
+                },
+                {
+                    "name": "Code Agent", 
+                    "url": "/code",
+                    "agent_card": "/code/.well-known/agent.json"
+                },
+                {
+                    "name": "Data Transformation Agent",
+                    "url": "/data", 
+                    "agent_card": "/data/.well-known/agent.json"
+                },
+                {
+                    "name": "Logic and Planning Agent",
+                    "url": "/planning",
+                    "agent_card": "/planning/.well-known/agent.json"
+                }
+            ]
+        }
+    )
+
+
+@fastapi_app.get("/.well-known/agents")
+async def agent_directory():
+    """Directory of independent A2A agents available at this deployment."""
+    return JSONResponse(
+        content={
+            "description": "A2A Agent Bootstrapping - Independent A2A Agents",
+            "deployment_info": {
+                "name": "A2A Agent Bootstrapping",
+                "version": "1.0.0",
+                "repository": "https://github.com/prassanna-ravishankar/a2a-agent-bootstrapping"
+            },
+            "independent_agents": [
+                {
+                    "name": "Research Agent",
+                    "url": "http://localhost:8000/research",
+                    "agent_card_url": "http://localhost:8000/research/.well-known/agent.json",
+                    "docs_url": "http://localhost:8000/research/docs",
+                    "description": "Independent A2A agent for web search and information synthesis"
+                },
+                {
+                    "name": "Code Agent", 
+                    "url": "http://localhost:8000/code",
+                    "agent_card_url": "http://localhost:8000/code/.well-known/agent.json",
+                    "docs_url": "http://localhost:8000/code/docs",
+                    "description": "Independent A2A agent for code generation and repository analysis"
+                },
+                {
+                    "name": "Data Transformation Agent",
+                    "url": "http://localhost:8000/data",
+                    "agent_card_url": "http://localhost:8000/data/.well-known/agent.json",
+                    "docs_url": "http://localhost:8000/data/docs",
+                    "description": "Independent A2A agent for data cleaning and format transformation"
+                },
+                {
+                    "name": "Logic and Planning Agent",
+                    "url": "http://localhost:8000/planning",
+                    "agent_card_url": "http://localhost:8000/planning/.well-known/agent.json",
+                    "docs_url": "http://localhost:8000/planning/docs",
+                    "description": "Independent A2A agent for strategic planning and goal decomposition"
+                }
+            ],
+            "note": "Each agent is completely independent and can be discovered/used separately via their individual Agent Cards."
+        }
+    )
+
+
 @fastapi_app.get("/agents")
 async def list_agents():
     """List all available agents and their capabilities."""
@@ -240,7 +359,7 @@ async def list_agents():
                     "emoji": "🕵️‍♂️",
                     "prefix": "/research",
                     "description": "Web search and information synthesis",
-                    "protocol": "A2A via Pydantic AI",
+                    "protocol": "A2A via FastA2A",
                     "capabilities": ["web_search", "information_synthesis", "source_citation"]
                 },
                 {
@@ -248,7 +367,7 @@ async def list_agents():
                     "emoji": "💻",
                     "prefix": "/code",
                     "description": "Code generation and GitHub repository review",
-                    "protocol": "A2A via Pydantic AI",
+                    "protocol": "A2A via FastA2A",
                     "capabilities": ["code_generation", "repository_analysis", "issue_detection"]
                 },
                 {
@@ -256,7 +375,7 @@ async def list_agents():
                     "emoji": "🔄", 
                     "prefix": "/data",
                     "description": "Data cleaning and format transformation",
-                    "protocol": "A2A via Pydantic AI",
+                    "protocol": "A2A via FastA2A",
                     "capabilities": ["data_parsing", "format_conversion", "data_cleaning"]
                 },
                 {
@@ -264,7 +383,7 @@ async def list_agents():
                     "emoji": "🧠",
                     "prefix": "/planning", 
                     "description": "Goal breakdown and strategic planning",
-                    "protocol": "A2A via Pydantic AI", 
+                    "protocol": "A2A via FastA2A", 
                     "capabilities": ["goal_analysis", "task_decomposition", "strategic_planning"]
                 }
             ]
@@ -299,6 +418,6 @@ if __name__ == "__main__":
         "a2a_agents.modal_app:fastapi_app",
         host="0.0.0.0",
         port=8000,
-        reload=True,
+        reload=False,  # Disabled auto-reload for stable testing
         log_level="info"
     )

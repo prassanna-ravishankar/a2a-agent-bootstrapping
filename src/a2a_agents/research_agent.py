@@ -8,6 +8,7 @@ from duckduckgo_search import DDGS
 from pydantic import HttpUrl
 from pydantic_ai import Agent, RunContext
 
+from .config import MODEL_NAME
 from .models import ResearchQuery, ResearchResult
 
 
@@ -72,7 +73,7 @@ def validate_url(url_string: str) -> bool:
 
 # Create the research agent with better configuration
 research_agent = Agent(
-    'gemini-1.5-flash',
+    MODEL_NAME,
     system_prompt=RESEARCH_SYSTEM_PROMPT,
     deps_type=RunContext,
     retries=2,  # Add retries for reliability

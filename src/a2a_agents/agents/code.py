@@ -6,8 +6,21 @@ from pathlib import Path
 from typing import List, Union
 from urllib.parse import urlparse
 
-import git
 from pydantic_ai import Agent, RunContext
+
+# Lazy import git to avoid cold boot issues
+def _import_git():
+    """Lazy import of git module with proper configuration for Modal."""
+    try:
+        import git
+        return git
+    except ImportError as e:
+        if "Bad git executable" in str(e):
+            # Try to configure git path for Modal environment
+            os.environ['GIT_PYTHON_REFRESH'] = 'quiet'
+            import git
+            return git
+        raise
 
 from ..config import MODEL_NAME
 from ..models import (
@@ -80,6 +93,7 @@ def clone_repository(github_url: str, branch: str = "main") -> str:
         temp_dir = tempfile.mkdtemp()
         
         # Clone the repository
+        git = _import_git()
         repo = git.Repo.clone_from(github_url, temp_dir)
         
         # Try to checkout the specified branch

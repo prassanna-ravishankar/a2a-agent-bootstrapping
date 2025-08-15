@@ -13,7 +13,6 @@ app = modal.App("planning-agent")
 image = (
     modal.Image.debian_slim(python_version="3.11")
     .apt_install("git")  # Required for GitPython dependency
-    .env({"GIT_PYTHON_REFRESH": "quiet"})  # Suppress GitPython warnings
     .pip_install_from_pyproject("pyproject.toml")
 )
 

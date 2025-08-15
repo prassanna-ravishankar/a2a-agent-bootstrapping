@@ -25,6 +25,7 @@ dependencies = [
     "GitPython>=3.1.43",
     "httpx>=0.28.0",
     "python-dotenv>=1.0.1",
+    "PyYAML>=6.0.0",  # Required for data transformation agent
 ]
 
 [dependency-groups]

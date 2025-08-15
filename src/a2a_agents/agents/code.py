@@ -216,7 +216,6 @@ File: {code_file.relative_to(repo_path)}
 code_agent = Agent(
     model=MODEL_NAME,
     name="Code Agent",
-    description="An AI agent specialized in code generation, review, debugging, and software development assistance",
     system_prompt=CODE_SYSTEM_PROMPT,
     deps_type=RunContext,
 )

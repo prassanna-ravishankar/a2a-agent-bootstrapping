@@ -77,7 +77,7 @@ modal secret create gemini-api-key GEMINI_API_KEY=your_key_here
 ## Important Implementation Details
 
 1. **A2A Protocol**: All agents use pydantic-ai's `to_a2a()` method for native protocol compliance
-2. **Optimized Images**: Only the code agent includes git (for GitHub repository analysis), other agents use minimal images
+2. **Consistent Images**: All agents include git (required for GitPython dependency in pyproject.toml)
 3. **Error Handling**: Each agent has built-in error handling returning structured error responses
 4. **Model Configuration**: Uses Gemini free tier (`gemini-2.0-flash-exp`) as the LLM backend
 5. **CORS**: Enabled for all origins to support cross-domain A2A communication

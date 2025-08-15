@@ -16,6 +16,7 @@ app = modal.App("research-agent")
 # Modal image with dependencies from root pyproject.toml + git support
 image = (
     modal.Image.debian_slim(python_version="3.11")
+    .apt_install("git")  # Required for GitPython dependency
     .pip_install_from_pyproject("pyproject.toml")  # Use root dependencies
 )
 

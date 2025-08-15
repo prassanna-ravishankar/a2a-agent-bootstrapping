@@ -91,7 +91,9 @@ def validate_url(url_string: str) -> bool:
 
 # Create the research agent with better configuration
 research_agent = Agent(
-    MODEL_NAME,
+    model=MODEL_NAME,
+    name="Research Agent",
+    description="An AI agent specialized in research tasks, information gathering, and analysis using advanced search and synthesis capabilities",
     system_prompt=RESEARCH_SYSTEM_PROMPT,
     deps_type=RunContext,
     retries=2,  # Add retries for reliability

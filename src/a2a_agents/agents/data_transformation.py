@@ -317,7 +317,9 @@ def transform_to_html(data: Dict[str, Any]) -> str:
 
 # Create the data transformation agent
 data_transformation_agent = Agent(
-    MODEL_NAME,
+    model=MODEL_NAME,
+    name="Data Agent",
+    description="An AI agent specialized in data analysis, processing, visualization, and insights generation from various data sources",
     system_prompt=DATA_TRANSFORMATION_SYSTEM_PROMPT,
     deps_type=RunContext,
 )

@@ -222,7 +222,9 @@ def validate_and_improve_steps(steps: List[str]) -> List[str]:
 
 # Create the planning agent
 planning_agent = Agent(
-    MODEL_NAME,
+    model=MODEL_NAME,
+    name="Planning Agent",
+    description="An AI agent specialized in project planning, task management, strategic planning, and workflow optimization",
     system_prompt=PLANNING_SYSTEM_PROMPT,
     deps_type=RunContext,
 )

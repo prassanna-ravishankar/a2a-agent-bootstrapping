@@ -90,6 +90,28 @@ class PlanningResult(BaseModel):
     steps: List[str] = Field(..., description="Sequential list of actionable steps")
 
 
-# Union types for flexibility
-CodeAgentRequest = Union[CodeGenerationRequest, CodeReviewRequest]
-CodeAgentResult = Union[CodeGenerationResult, CodeReviewResult]
+# Unified Code Agent Request Model
+class CodeAgentRequest(BaseModel):
+    """Unified input model for the Code Agent."""
+    task: TaskType = Field(..., description="Type of task to perform")
+    code_description: Optional[str] = Field(None, description="Description of code to generate (for GENERATE tasks)")
+    github_url: Optional[HttpUrl] = Field(None, description="GitHub repository URL to review (for REVIEW tasks)")
+    branch: Optional[str] = Field(None, description="Branch to review (defaults to main)")
+    
+    def model_validate(cls, data):
+        """Validate that required fields are present based on task type."""
+        if isinstance(data, dict):
+            task = data.get('task')
+            if task == TaskType.GENERATE and not data.get('code_description'):
+                raise ValueError("code_description is required for GENERATE tasks")
+            elif task == TaskType.REVIEW and not data.get('github_url'):
+                raise ValueError("github_url is required for REVIEW tasks")
+        return super().model_validate(data)
+
+# Unified Code Agent Result Model  
+class CodeAgentResult(BaseModel):
+    """Unified output model for the Code Agent."""
+    task: TaskType = Field(..., description="Type of task that was performed")
+    generated_code: Optional[str] = Field(None, description="The generated code (for GENERATE tasks)")
+    review_summary: Optional[str] = Field(None, description="Summary of the code review (for REVIEW tasks)")
+    issues: Optional[List[CodeIssue]] = Field(None, description="List of issues found (for REVIEW tasks)")

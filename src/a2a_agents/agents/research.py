@@ -47,19 +47,37 @@ def search_web(query: str, max_results: int = 10) -> List[dict]:
     Returns:
         List of search results with title, body, and href
     """
-    try:
-        with DDGS() as ddgs:
-            results = []
-            for result in ddgs.text(query, max_results=max_results):
-                results.append({
-                    'title': result.get('title', ''),
-                    'body': result.get('body', ''),
-                    'href': result.get('href', '')
-                })
-            return results
-    except Exception as e:
-        print(f"Search error: {e}")
-        return []
+    import time
+    
+    # Try multiple times with different approaches
+    for attempt in range(3):
+        try:
+            print(f"Search attempt {attempt + 1} for query: {query}")
+            with DDGS() as ddgs:
+                results = []
+                search_iter = ddgs.text(query, max_results=max_results)
+                
+                for result in search_iter:
+                    if result:  # Make sure result is not None
+                        results.append({
+                            'title': result.get('title', 'No title'),
+                            'body': result.get('body', 'No content'),
+                            'href': result.get('href', 'No URL')
+                        })
+                
+                if results:
+                    print(f"Search successful: found {len(results)} results")
+                    return results
+                else:
+                    print(f"Search attempt {attempt + 1}: No results found")
+                    
+        except Exception as e:
+            print(f"Search attempt {attempt + 1} failed: {e}")
+            if attempt < 2:  # Don't sleep on last attempt
+                time.sleep(1)  # Brief pause between attempts
+    
+    print("All search attempts failed")
+    return []
 
 
 def validate_url(url_string: str) -> bool:

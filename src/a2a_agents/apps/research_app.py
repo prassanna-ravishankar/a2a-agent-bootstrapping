@@ -24,8 +24,9 @@ image = (
 @app.function(
     image=image,
     secrets=[modal.Secret.from_dict({"GEMINI_API_KEY": os.getenv("GEMINI_API_KEY", "")})],
-    scaledown_window=300,
-    timeout=60,
+    timeout=30,  # Reduced from 60s to 30s to save costs
+    max_containers=2,  # Limit concurrent containers to keep costs low
+    scaledown_window=60,  # Scale down faster when idle (1 minute)
 )
 @modal.asgi_app()
 def research_agent_app():

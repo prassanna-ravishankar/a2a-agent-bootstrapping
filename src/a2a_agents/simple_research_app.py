@@ -29,22 +29,15 @@ image = (
 )
 @modal.asgi_app()
 def simple_research_agent():
-    """Deploy Research Agent using Pydantic AI's native A2A support."""
-    
+    """Deploy Research Agent - Pydantic AI handles everything!"""
     from .research_agent import research_agent
     from .config import config
     
-    # Set up API key compatibility
     config.setup_api_keys()
     
-    print("🕵️‍♂️ Initializing Research Agent with native A2A support...")
-    print(f"🔧 Model: {config.MODEL_NAME}")
-    
-    # Use Pydantic AI's built-in A2A method - much simpler!
-    app = research_agent.to_a2a()
-    
-    print("✅ Research Agent ready with native A2A protocol")
-    return app
+    # That's it! Pydantic AI's to_a2a() returns a complete ASGI app
+    # with all A2A endpoints, docs, agent cards, etc.
+    return research_agent.to_a2a()
 
 
 # For local development and testing
@@ -53,23 +46,13 @@ if __name__ == "__main__":
     from src.a2a_agents.research_agent import research_agent
     from src.a2a_agents.config import config
     
-    print("🕵️‍♂️ Starting Simple Research Agent locally...")
-    print(f"🔧 Model: {config.MODEL_NAME}")
-    print("📚 Native A2A Protocol: http://localhost:8002/")
-    print("🌐 This uses Pydantic AI's built-in A2A support - no FastA2A!")
-    
-    # Set up API keys
+    print("🕵️‍♂️ Starting Research Agent locally on port 8002...")
     config.setup_api_keys()
     
-    # Use the simple, native A2A method
-    app = research_agent.to_a2a()
-    
-    print("✅ Research Agent initialized with native A2A")
-    print("🎯 Ready for A2A communication")
-    
+    # Pydantic AI's to_a2a() returns a complete ASGI app - just run it!
     uvicorn.run(
-        app,  # Direct ASGI app from to_a2a()
-        host="0.0.0.0", 
+        research_agent.to_a2a(),
+        host="0.0.0.0",
         port=8002,
         reload=False,
         log_level="info"

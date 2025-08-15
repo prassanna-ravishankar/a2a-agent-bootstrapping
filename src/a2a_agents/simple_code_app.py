@@ -24,12 +24,11 @@ image = (
 )
 @modal.asgi_app()
 def simple_code_agent():
-    """Deploy Code Agent using Pydantic AI's native A2A support."""
+    """Deploy Code Agent - Pydantic AI handles everything!"""
     from .code_agent import code_agent
     from .config import config
     
     config.setup_api_keys()
-    print("💻 Code Agent ready with native A2A protocol")
     return code_agent.to_a2a()
 
 if __name__ == "__main__":
@@ -37,7 +36,7 @@ if __name__ == "__main__":
     from src.a2a_agents.code_agent import code_agent
     from src.a2a_agents.config import config
     
-    print("💻 Starting Simple Code Agent on port 8003...")
+    print("💻 Starting Code Agent locally on port 8003...")
     config.setup_api_keys()
     
     uvicorn.run(

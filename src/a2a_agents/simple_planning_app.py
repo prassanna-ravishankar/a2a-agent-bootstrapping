@@ -24,12 +24,11 @@ image = (
 )
 @modal.asgi_app()
 def simple_planning_agent():
-    """Deploy Planning Agent using Pydantic AI's native A2A support."""
+    """Deploy Planning Agent - Pydantic AI handles everything!"""
     from .planning_agent import planning_agent
     from .config import config
     
     config.setup_api_keys()
-    print("🧠 Planning Agent ready with native A2A protocol")
     return planning_agent.to_a2a()
 
 if __name__ == "__main__":
@@ -37,13 +36,13 @@ if __name__ == "__main__":
     from src.a2a_agents.planning_agent import planning_agent
     from src.a2a_agents.config import config
     
-    print("🧠 Starting Simple Planning Agent on port 8005...")
+    print("🧠 Starting Planning Agent locally on port 8005...")
     config.setup_api_keys()
     
     uvicorn.run(
         planning_agent.to_a2a(),
         host="0.0.0.0",
-        port=8005, 
+        port=8005,
         reload=False,
         log_level="info"
     )

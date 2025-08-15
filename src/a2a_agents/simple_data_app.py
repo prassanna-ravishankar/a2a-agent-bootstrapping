@@ -24,12 +24,11 @@ image = (
 )
 @modal.asgi_app()
 def simple_data_agent():
-    """Deploy Data Agent using Pydantic AI's native A2A support."""
+    """Deploy Data Agent - Pydantic AI handles everything!"""
     from .data_transformation_agent import data_transformation_agent
     from .config import config
     
     config.setup_api_keys()
-    print("🔄 Data Agent ready with native A2A protocol")
     return data_transformation_agent.to_a2a()
 
 if __name__ == "__main__":
@@ -37,12 +36,12 @@ if __name__ == "__main__":
     from src.a2a_agents.data_transformation_agent import data_transformation_agent
     from src.a2a_agents.config import config
     
-    print("🔄 Starting Simple Data Agent on port 8004...")
+    print("🔄 Starting Data Agent locally on port 8004...")
     config.setup_api_keys()
     
     uvicorn.run(
         data_transformation_agent.to_a2a(),
-        host="0.0.0.0", 
+        host="0.0.0.0",
         port=8004,
         reload=False,
         log_level="info"

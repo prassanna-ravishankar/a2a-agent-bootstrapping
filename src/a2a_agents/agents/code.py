@@ -9,8 +9,8 @@ from urllib.parse import urlparse
 import git
 from pydantic_ai import Agent, RunContext
 
-from .config import MODEL_NAME
-from .models import (
+from ..config import MODEL_NAME
+from ..models import (
     CodeAgentRequest,
     CodeAgentResult,
     CodeGenerationRequest,

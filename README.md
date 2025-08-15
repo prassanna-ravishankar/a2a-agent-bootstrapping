@@ -87,16 +87,26 @@ This project implements **four specialized AI agents** that demonstrate the powe
    echo "GEMINI_API_KEY=your_gemini_api_key_here" > .env
    ```
 
-5. **Run the application locally**
+5. **Run individual agents locally**
    ```bash
-   # Run from the project root
-   python -m a2a_agents.modal_app
+   # Run Research Agent (port 8002)
+   python -m a2a_agents.apps.research_app
+   
+   # Run Code Agent (port 8003)
+   python -m a2a_agents.apps.code_app
+   
+   # Run Data Agent (port 8004)
+   python -m a2a_agents.apps.data_app
+   
+   # Run Planning Agent (port 8005)
+   python -m a2a_agents.apps.planning_app
    ```
 
-6. **Open your browser**
-   - Web Interface: http://localhost:8000
-   - API Documentation: http://localhost:8000/docs
-   - Alternative Docs: http://localhost:8000/redoc
+6. **Access individual agents**
+   - Research Agent: http://localhost:8002 (docs: http://localhost:8002/docs)
+   - Code Agent: http://localhost:8003 (docs: http://localhost:8003/docs)
+   - Data Agent: http://localhost:8004 (docs: http://localhost:8004/docs)
+   - Planning Agent: http://localhost:8005 (docs: http://localhost:8005/docs)
 
 ### Deploy to Modal.com
 
@@ -119,26 +129,35 @@ This project implements **four specialized AI agents** that demonstrate the powe
    modal secret list
    ```
 
-4. **Deploy the application**
+4. **Deploy individual agents (using module mode)**
    ```bash
-   # Deploy using module mode
-   modal deploy -m a2a_agents.modal_app
+   # Deploy Research Agent
+   modal deploy -m a2a_agents.apps.research_app
+   
+   # Deploy Code Agent
+   modal deploy -m a2a_agents.apps.code_app
+   
+   # Deploy Data Agent
+   modal deploy -m a2a_agents.apps.data_app
+   
+   # Deploy Planning Agent
+   modal deploy -m a2a_agents.apps.planning_app
    ```
 
 ## 📡 A2A Protocol Usage
 
 All agents are exposed via **Pydantic AI's native A2A protocol**, providing standardized agent-to-agent communication:
 
-### Research Agent
+### Research Agent (Port 8002)
 ```bash
-curl -X POST "http://localhost:8000/research/" \
+curl -X POST "http://localhost:8002/run" \
   -H "Content-Type: application/json" \
   -d '{"query": "What are the latest developments in quantum computing?"}'
 ```
 
-### Code Agent
+### Code Agent (Port 8003)
 ```bash
-curl -X POST "http://localhost:8000/code/" \
+curl -X POST "http://localhost:8003/run" \
   -H "Content-Type: application/json" \
   -d '{
     "task": "generate",
@@ -146,9 +165,9 @@ curl -X POST "http://localhost:8000/code/" \
   }'
 ```
 
-### Data Transformation Agent
+### Data Transformation Agent (Port 8004)
 ```bash
-curl -X POST "http://localhost:8000/data/" \
+curl -X POST "http://localhost:8004/run" \
   -H "Content-Type: application/json" \
   -d '{
     "data": "name,age,city\nJohn,25,New York\nJane,30,Boston",
@@ -156,9 +175,9 @@ curl -X POST "http://localhost:8000/data/" \
   }'
 ```
 
-### Planning Agent
+### Planning Agent (Port 8005)
 ```bash
-curl -X POST "http://localhost:8000/planning/" \
+curl -X POST "http://localhost:8005/run" \
   -H "Content-Type: application/json" \
   -d '{"goal": "Launch a mobile app for task management"}'
 ```
@@ -171,17 +190,24 @@ curl -X POST "http://localhost:8000/planning/" \
 a2a-agent-bootstrapping/
 ├── src/
 │   └── a2a_agents/
-│       ├── __init__.py       # Package exports and agent registry
-│       ├── modal_app.py      # Main FastAPI application + Modal deployment
-│       ├── models.py         # Pydantic models for A2A communication
-│       ├── a2a_apps.py      # A2A applications using agent.to_a2a()
-│       ├── research_agent.py # Research Agent core logic
-│       ├── code_agent.py     # Code Agent core logic  
-│       ├── data_transformation_agent.py # Data Agent core logic
-│       └── planning_agent.py # Planning Agent core logic
-├── tests/                    # Comprehensive test suite
-├── pyproject.toml           # Project configuration and dependencies
-└── README.md               # This file
+│       ├── __init__.py                    # Package exports and agent registry
+│       ├── models.py                      # Pydantic models for A2A communication
+│       ├── config.py                      # Configuration and API key setup
+│       ├── agents/                        # Core agent implementations
+│       │   ├── __init__.py
+│       │   ├── research.py                # Research Agent core logic
+│       │   ├── code.py                    # Code Agent core logic
+│       │   ├── data_transformation.py     # Data Agent core logic
+│       │   └── planning.py                # Planning Agent core logic
+│       └── apps/                          # Modal deployment applications
+│           ├── __init__.py
+│           ├── research_app.py            # Research Agent Modal deployment
+│           ├── code_app.py                # Code Agent Modal deployment
+│           ├── data_app.py                # Data Agent Modal deployment
+│           └── planning_app.py            # Planning Agent Modal deployment
+├── tests/                                 # Comprehensive test suite
+├── pyproject.toml                        # Project configuration and dependencies
+└── README.md                             # This file
 ```
 
 ### Design Principles
@@ -190,7 +216,7 @@ a2a-agent-bootstrapping/
 
 2. **Modular Agent Design**: Each agent is self-contained with its own logic and A2A application, making the system highly maintainable and extensible.
 
-3. **Single Unified Deployment**: All agents are deployed together as one FastAPI service for efficient resource sharing and simplified CI/CD.
+3. **Individual Agent Deployment**: Each agent is deployed as its own Modal app, allowing for independent scaling and deployment.
 
 4. **Protocol-First Approach**: Built specifically for agent-to-agent communication, not human-facing APIs.
 
@@ -201,8 +227,11 @@ a2a-agent-bootstrapping/
 We use [taskipy](https://github.com/taskipy/taskipy) for common development tasks:
 
 ```bash
-# Run the application locally
-task run
+# Run individual agents locally
+task run-research    # Research Agent on port 8002
+task run-code       # Code Agent on port 8003
+task run-data       # Data Agent on port 8004
+task run-planning   # Planning Agent on port 8005
 
 # Run all tests
 task tests
@@ -305,4 +334,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Ready to bootstrap your multi-agent system?** 🚀  
-Start exploring the agents at [localhost:8000](http://localhost:8000) after setup!
+Start exploring the agents:
+- Research Agent: [localhost:8002](http://localhost:8002)
+- Code Agent: [localhost:8003](http://localhost:8003)  
+- Data Agent: [localhost:8004](http://localhost:8004)
+- Planning Agent: [localhost:8005](http://localhost:8005)

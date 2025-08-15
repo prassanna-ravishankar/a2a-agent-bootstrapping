@@ -11,12 +11,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Create Modal app for research agent
-app = modal.App("simple-research-agent")
+app = modal.App("research-agent")
 
 # Modal image with dependencies from root pyproject.toml + git support
 image = (
     modal.Image.debian_slim(python_version="3.11")
-    .apt_install("git")  # Required for GitPython and general git operations
     .pip_install_from_pyproject("pyproject.toml")  # Use root dependencies
 )
 
@@ -24,14 +23,14 @@ image = (
 @app.function(
     image=image,
     secrets=[modal.Secret.from_dict({"GEMINI_API_KEY": os.getenv("GEMINI_API_KEY", "")})],
-    container_idle_timeout=300,
+    scaledown_window=300,
     timeout=60,
 )
 @modal.asgi_app()
-def simple_research_agent():
+def research_agent_app():
     """Deploy Research Agent - Pydantic AI handles everything!"""
-    from .research_agent import research_agent
-    from .config import config
+    from ..agents.research import research_agent
+    from ..config import config
     
     config.setup_api_keys()
     
@@ -43,8 +42,8 @@ def simple_research_agent():
 # For local development and testing
 if __name__ == "__main__":
     import uvicorn
-    from src.a2a_agents.research_agent import research_agent
-    from src.a2a_agents.config import config
+    from a2a_agents.agents.research import research_agent
+    from a2a_agents.config import config
     
     print("🕵️‍♂️ Starting Research Agent locally on port 8002...")
     config.setup_api_keys()

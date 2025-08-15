@@ -56,7 +56,10 @@ lint = { cmd = "ruff check --fix ./src/", help = "Lint code using ruff" }
 type = { cmd = "ty check", help = "Typecheck code using ty" }
 tests = { cmd = "pytest --verbose --color=yes tests", help = "Run all tests using pytest" }
 coverage = { cmd = "coverage run -m pytest tests && coverage report", help = "Generate coverage report" }
-run = { cmd = "uv run ./src/a2a_agents/a2a_agents.py", help = "Run main application" }
+run-research = { cmd = "uv run -m a2a_agents.apps.research_app", help = "Run research agent locally" }
+run-code = { cmd = "uv run -m a2a_agents.apps.code_app", help = "Run code agent locally" }
+run-data = { cmd = "uv run -m a2a_agents.apps.data_app", help = "Run data agent locally" }
+run-planning = { cmd = "uv run -m a2a_agents.apps.planning_app", help = "Run planning agent locally" }
 
 [tool.ruff]
 line-length = 100

@@ -8,8 +8,8 @@ from duckduckgo_search import DDGS
 from pydantic import HttpUrl
 from pydantic_ai import Agent, RunContext
 
-from .config import MODEL_NAME
-from .models import ResearchQuery, ResearchResult
+from ..config import MODEL_NAME
+from ..models import ResearchQuery, ResearchResult
 
 
 # System prompt for the research agent

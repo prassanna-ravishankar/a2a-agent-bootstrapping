@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from src.a2a_agents.research_agent import research_agent
+from a2a_agents.agents.research import research_agent
 from pydantic_ai import RunContext
 
 async def test_research_with_search():

@@ -11,8 +11,8 @@ import httpx
 import yaml
 from pydantic_ai import Agent, RunContext
 
-from .config import MODEL_NAME
-from .models import DataTransformationRequest, DataTransformationResult, TargetFormat
+from ..config import MODEL_NAME
+from ..models import DataTransformationRequest, DataTransformationResult, TargetFormat
 
 
 # System prompt for the data transformation agent

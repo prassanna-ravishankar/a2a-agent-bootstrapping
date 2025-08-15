@@ -8,33 +8,32 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = modal.App("simple-data-agent")
+app = modal.App("data-agent")
 
 image = (
     modal.Image.debian_slim(python_version="3.11")
-    .apt_install("git")  # Required for potential git operations
     .pip_install_from_pyproject("pyproject.toml")
 )
 
 @app.function(
     image=image,
     secrets=[modal.Secret.from_dict({"GEMINI_API_KEY": os.getenv("GEMINI_API_KEY", "")})],
-    container_idle_timeout=300,
+    scaledown_window=300,
     timeout=60,
 )
 @modal.asgi_app()
-def simple_data_agent():
+def data_agent_app():
     """Deploy Data Agent - Pydantic AI handles everything!"""
-    from .data_transformation_agent import data_transformation_agent
-    from .config import config
+    from ..agents.data_transformation import data_transformation_agent
+    from ..config import config
     
     config.setup_api_keys()
     return data_transformation_agent.to_a2a()
 
 if __name__ == "__main__":
     import uvicorn
-    from src.a2a_agents.data_transformation_agent import data_transformation_agent
-    from src.a2a_agents.config import config
+    from a2a_agents.agents.data_transformation import data_transformation_agent
+    from a2a_agents.config import config
     
     print("🔄 Starting Data Agent locally on port 8004...")
     config.setup_api_keys()

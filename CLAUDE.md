@@ -22,7 +22,11 @@ All agents are exposed via Pydantic AI's native `agent.to_a2a()` method for prot
 # Run application locally
 task run
 # or directly
-python -m a2a_agents.modal_app
+# Run individual agents (using module mode):
+python -m a2a_agents.apps.research_app  # Port 8002
+python -m a2a_agents.apps.code_app      # Port 8003
+python -m a2a_agents.apps.data_app      # Port 8004
+python -m a2a_agents.apps.planning_app  # Port 8005
 
 # Run tests
 task tests
@@ -34,8 +38,12 @@ task lint      # Fix linting issues with ruff
 task format    # Format code with ruff
 task type      # Type checking with ty
 
-# Deploy to Modal.com
-modal deploy -m a2a_agents.modal_app
+# Deploy to Modal.com (using module mode)
+# Deploy individual agents:
+modal deploy -m a2a_agents.apps.research_app
+modal deploy -m a2a_agents.apps.code_app
+modal deploy -m a2a_agents.apps.data_app
+modal deploy -m a2a_agents.apps.planning_app
 ```
 
 ## Testing
@@ -59,15 +67,17 @@ modal secret create gemini-api-key GEMINI_API_KEY=your_key_here
 
 - `src/a2a_agents/`: Main package directory
   - `models.py`: Pydantic models for agent inputs/outputs
-  - `*_agent.py`: Individual agent implementations with core logic
-  - `a2a_apps.py`: Converts agents to A2A ASGI applications
-  - `modal_app.py`: FastAPI server and Modal deployment configuration
+  - `config.py`: Configuration and API key setup
+  - `agents/`: Core agent implementations
+    - `research.py`, `code.py`, `data_transformation.py`, `planning.py`
+  - `apps/`: Modal deployment applications
+    - `research_app.py`, `code_app.py`, `data_app.py`, `planning_app.py`
   - `__init__.py`: Package exports and agent registry (AGENTS dict)
 
 ## Important Implementation Details
 
 1. **A2A Protocol**: All agents use pydantic-ai's `to_a2a()` method for native protocol compliance
-2. **GitPython**: The code agent requires git to be installed (handled in Modal image)
+2. **Optimized Images**: Only the code agent includes git (for GitHub repository analysis), other agents use minimal images
 3. **Error Handling**: Each agent has built-in error handling returning structured error responses
 4. **Model Configuration**: Uses Gemini free tier (`gemini-2.0-flash-exp`) as the LLM backend
 5. **CORS**: Enabled for all origins to support cross-domain A2A communication

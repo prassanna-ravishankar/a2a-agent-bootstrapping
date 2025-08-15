@@ -36,7 +36,16 @@ The project will follow the `wyattferguson/pattern` cookiecutter, with an additi
 ├── .env                  # For API keys and other secrets
 ├── pyproject.toml
 ├── requirements.txt
-├── modal_app.py          # The single, main FastAPI application for deployment
+├── apps/                     # Modal deployment applications
+│   ├── research_app.py       # Research Agent Modal deployment
+│   ├── code_app.py           # Code Agent Modal deployment  
+│   ├── data_app.py           # Data Agent Modal deployment
+│   └── planning_app.py       # Planning Agent Modal deployment
+├── agents/                   # Core agent implementations
+│   ├── research.py           # Research Agent core logic
+│   ├── code.py               # Code Agent core logic
+│   ├── data_transformation.py# Data Agent core logic
+│   └── planning.py           # Planning Agent core logic
 └── src/
     └── a2a_agents/
         ├── __init__.py
@@ -45,28 +54,38 @@ The project will follow the `wyattferguson/pattern` cookiecutter, with an additi
         ├── code_agent.py               # Code Agent core logic
         ├── data_transformation_agent.py# Data Transformation Agent core logic
         ├── planning_agent.py           # Logic and Planning Agent core logic
-        ├── research_agent_router.py    # FastAPI APIRouter for the Research Agent
-        ├── code_agent_router.py        # FastAPI APIRouter for the Code Agent
-        ├── data_transformation_router.py# FastAPI APIRouter for the Data Transformation Agent
-        └── planning_agent_router.py    # FastAPI APIRouter for the Planning Agent
+        ├── agents/                     # Core agent implementations
+        │   ├── research.py             # Research Agent core logic
+        │   ├── code.py                 # Code Agent core logic
+        │   ├── data_transformation.py  # Data Agent core logic
+        │   └── planning.py             # Planning Agent core logic
+        └── apps/                       # Modal deployment applications
+            ├── research_app.py         # Research Agent Modal deployment
+            ├── code_app.py             # Code Agent Modal deployment
+            ├── data_app.py             # Data Agent Modal deployment
+            └── planning_app.py         # Planning Agent Modal deployment
 ```
 
 -----
 
 ## 4\. Communication and Deployment Strategy
 
-The project is built on the principle of a **single, unified application** for deployment, even though it contains multiple agents.
+The project is built on the principle of **individual modal applications per agent** for independent deployment and scaling.
 
-### A. Agent-Router Design
+### A. Individual Agent Applications
 
-Each agent's core logic will be a `pydantic_ai.Agent` instance. The `pydantic-ai` library's `to_a2a_router()` method will be used to automatically generate a dedicated `APIRouter` for each agent. This router will handle all the necessary A2A endpoints, including the task submission and status checking. This approach allows each agent to be treated as a modular, self-contained service.
+Each agent's core logic is a `pydantic_ai.Agent` instance. The `pydantic-ai` library's `to_a2a()` method is used to automatically generate a complete ASGI application for each agent. This application handles all the necessary A2A endpoints, including task submission and status checking. This approach allows each agent to be treated as a completely independent, self-contained service.
 
-### B. Single FastAPI Application
+### B. Separate Modal Applications
 
-All these individual agent routers will then be combined into one main FastAPI application in `modal_app.py`. This is done using FastAPI's `app.include_router()` function. Each agent's router will be mounted at a unique URL prefix (e.g., `/research`, `/code`). This centralizes deployment and management.
+Each agent has its own Modal application file (`*_app.py` in the `apps/` directory) that can be deployed independently. Each file defines its own `modal.App`, `modal.Image`, and deployment configuration. This allows for:
+- Independent scaling per agent
+- Separate deployment cycles
+- Isolated resource management
+- Individual monitoring and logging
 
 ### C. Modal.com Hosting
 
-The `modal_app.py` file will serve as the deployment entry point. A single `modal.App` will be defined, along with a `modal.Image` that contains all the necessary dependencies. The main FastAPI application will be deployed using the `@modal.asgi_app()` decorator, which efficiently hosts the entire service on a single container.
+Each `*_app.py` file in the `apps/` directory serves as an independent deployment entry point. Each defines its own `modal.App` with appropriate dependencies and secrets. The agents are deployed using the `@modal.asgi_app()` decorator, which efficiently hosts each service on its own container.
 
-This deployment model is efficient because it shares resources and simplifies the entire CI/CD pipeline, as there is only one artifact to deploy and one service to manage.
+This deployment model provides maximum flexibility because each agent can be scaled, updated, and managed independently, allowing for optimal resource utilization and deployment strategies per agent type.

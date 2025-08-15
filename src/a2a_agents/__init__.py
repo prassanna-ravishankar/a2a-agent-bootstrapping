@@ -20,18 +20,13 @@ from .models import (
 )
 
 # Agent core logic functions
-from .code_agent import process_code_request, code_agent
-from .data_transformation_agent import transform_data, data_transformation_agent
-from .planning_agent import create_plan, planning_agent
-from .research_agent import research_query, research_agent
+from .agents.code import process_code_request, code_agent
+from .agents.data_transformation import transform_data, data_transformation_agent
+from .agents.planning import create_plan, planning_agent
+from .agents.research import research_query, research_agent
 
-# A2A applications
-from .a2a_apps import (
-    research_a2a_app,
-    code_a2a_app,
-    data_a2a_app,
-    planning_a2a_app,
-)
+# Configuration
+from .config import config
 
 __version__ = "0.1.0"
 
@@ -41,7 +36,7 @@ AGENTS = {
         "name": "Research Agent",
         "emoji": "🕵️‍♂️",
         "description": "Answers complex queries by searching the web and synthesizing information",
-        "a2a_app": research_a2a_app,
+        "modal_app": "apps/research_app.py",
         "agent": research_agent,
         "function": research_query,
     },
@@ -49,7 +44,7 @@ AGENTS = {
         "name": "Code Agent", 
         "emoji": "💻",
         "description": "Generates new code or reviews code from GitHub repositories",
-        "a2a_app": code_a2a_app,
+        "modal_app": "apps/code_app.py",
         "agent": code_agent,
         "function": process_code_request,
     },
@@ -57,7 +52,7 @@ AGENTS = {
         "name": "Data Transformation Agent",
         "emoji": "🔄",
         "description": "Cleans and structures raw, messy data into specified formats",
-        "a2a_app": data_a2a_app,
+        "modal_app": "apps/data_app.py",
         "agent": data_transformation_agent,
         "function": transform_data,
     },
@@ -65,7 +60,7 @@ AGENTS = {
         "name": "Logic and Planning Agent",
         "emoji": "🧠", 
         "description": "Breaks down high-level goals into logical, sequential plans",
-        "a2a_app": planning_a2a_app,
+        "modal_app": "apps/planning_app.py",
         "agent": planning_agent,
         "function": create_plan,
     }
@@ -88,6 +83,6 @@ __all__ = [
     "process_code_request", "code_agent", 
     "transform_data", "data_transformation_agent",
     "create_plan", "planning_agent",
-    # A2A Applications
-    "research_a2a_app", "code_a2a_app", "data_a2a_app", "planning_a2a_app",
+    # Configuration
+    "config",
 ]

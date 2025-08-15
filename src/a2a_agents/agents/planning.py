@@ -5,8 +5,8 @@ from typing import List
 
 from pydantic_ai import Agent, RunContext
 
-from .config import MODEL_NAME
-from .models import PlanningRequest, PlanningResult
+from ..config import MODEL_NAME
+from ..models import PlanningRequest, PlanningResult
 
 
 # System prompt for the planning agent

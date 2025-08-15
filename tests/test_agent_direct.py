@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Import our agent directly
-from src.a2a_agents.research_agent import research_agent
+from a2a_agents.agents.research import research_agent
 from pydantic_ai import RunContext
 
 

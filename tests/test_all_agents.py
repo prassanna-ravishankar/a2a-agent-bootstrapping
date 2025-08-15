@@ -154,9 +154,9 @@ def main():
             print(f"  • {result['agent']}: {result.get('error', 'Unknown error')}")
     
     # Save results
-    with open("simple_agents_test_results.json", "w") as f:
+    with open("agents_test_results.json", "w") as f:
         json.dump(results, f, indent=2)
-    print(f"\n📄 Results saved to: simple_agents_test_results.json")
+    print(f"\n📄 Results saved to: agents_test_results.json")
     
     return len(failed) == 0
 

@@ -18,15 +18,13 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "pydantic-ai>=0.7.2",  # Includes native A2A support
+    "pydantic-ai-slim[a2a,google]>=0.7.2",  # Includes A2A support and Google models
     "modal>=0.65.0",
     "uvicorn>=0.32.0",
     "duckduckgo-search>=6.3.0",
     "GitPython>=3.1.43",
     "httpx>=0.28.0",
     "python-dotenv>=1.0.1",
-    # Removed: fasta2a, a2a, fastapi, python-multipart
-    # Pydantic AI's native to_a2a() handles everything!
 ]
 
 [dependency-groups]

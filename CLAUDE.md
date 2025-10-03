@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an A2A (Agent-to-Agent) protocol implementation showcasing four specialized AI agents built with pydantic-ai. The agents communicate via the native A2A protocol and are deployed as a single FastAPI service on Modal.com.
+This is an A2A (Agent-to-Agent) protocol implementation showcasing four specialized AI agents built with pydantic-ai. The agents communicate via the native A2A protocol and are deployed as four separate, independent Modal apps on Modal.com.
 
 ## Architecture
 
@@ -14,15 +14,12 @@ The project implements four distinct agents, each with specific capabilities:
 - **Data Transformation Agent**: Data cleaning and format conversion (JSON/CSV/XML/YAML)
 - **Planning Agent**: Strategic planning and goal decomposition
 
-All agents are exposed via Pydantic AI's native `agent.to_a2a()` method for protocol compliance. The agents are mounted as ASGI sub-applications on a FastAPI server at `/research`, `/code`, `/data`, and `/planning` endpoints.
+All agents are exposed via Pydantic AI's native `agent.to_a2a()` method, which creates a standalone ASGI application for each agent. Each agent runs as an independent service on its own port (8002, 8003, 8004, 8005) and deploys as a separate Modal app.
 
 ## Key Development Commands
 
 ```bash
-# Run application locally
-task run
-# or directly
-# Run individual agents (using module mode):
+# Run individual agents locally (using module mode):
 python -m a2a_agents.apps.research_app  # Port 8002
 python -m a2a_agents.apps.code_app      # Port 8003
 python -m a2a_agents.apps.data_app      # Port 8004

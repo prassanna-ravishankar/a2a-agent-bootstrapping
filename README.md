@@ -39,9 +39,8 @@ This project implements **four specialized AI agents** that demonstrate the powe
 
 ## 🛠️ Technology Stack
 
-- **Agent Framework**: [pydantic-ai](https://github.com/pydantic/pydantic-ai) for A2A communication and agent logic
-- **Web Framework**: [FastAPI](https://fastapi.tiangolo.com/) for creating the web service
-- **Deployment**: [Modal.com](https://modal.com/) for serverless deployment
+- **Agent Framework**: [pydantic-ai](https://github.com/pydantic/pydantic-ai) for A2A communication and agent logic (creates ASGI apps via `to_a2a()`)
+- **Deployment**: [Modal.com](https://modal.com/) for serverless deployment of independent agent services
 - **LLM**: Google Gemini (free tier) as the core reasoning engine
 - **External Tools**: 
   - [DuckDuckGo Search](https://pypi.org/project/duckduckgo-search/) for web research
@@ -214,9 +213,9 @@ a2a-agent-bootstrapping/
 
 1. **Pure A2A Protocol Implementation**: All agents are exposed via Pydantic AI's native `agent.to_a2a()` method for true protocol compliance.
 
-2. **Modular Agent Design**: Each agent is self-contained with its own logic and A2A application, making the system highly maintainable and extensible.
+2. **Modular Agent Design**: Each agent is self-contained with its own logic and standalone ASGI application created by `agent.to_a2a()`, making the system highly maintainable and extensible.
 
-3. **Individual Agent Deployment**: Each agent is deployed as its own Modal app, allowing for independent scaling and deployment.
+3. **Independent Service Architecture**: Each agent runs as a separate service (no shared FastAPI server), allowing for independent scaling, deployment, and development.
 
 4. **Protocol-First Approach**: Built specifically for agent-to-agent communication, not human-facing APIs.
 
@@ -284,9 +283,9 @@ task coverage
 - Structured logging and monitoring ready
 - Comprehensive test coverage
 
-### ✅ Scalable Architecture  
+### ✅ Scalable Architecture
 - Modular agent design for easy extension
-- Single deployment model for efficiency
+- Independent service deployment for flexibility
 - Clean separation of concerns
 - Serverless scaling with Modal.com
 

@@ -37,8 +37,12 @@ def planning_agent_app():
     from starlette.middleware import Middleware
     from .middleware import CustomTitleMiddleware
 
+    # Get the dynamic Modal URL for this deployment
+    agent_url = planning_agent_app.get_web_url()
+
     a2a_app = planning_agent.to_a2a(
         name="Planning Agent",
+        url=agent_url,
         description="An AI agent specialized in project planning, task management, strategic planning, and workflow optimization",
         middleware=[Middleware(CustomTitleMiddleware, agent_name="Planning Agent")]
     )
@@ -67,6 +71,7 @@ if __name__ == "__main__":
 
     a2a_app = planning_agent.to_a2a(
         name="Planning Agent",
+        url="http://localhost:8005",
         middleware=[Middleware(CustomTitleMiddleware, agent_name="Planning Agent")]
     )
 

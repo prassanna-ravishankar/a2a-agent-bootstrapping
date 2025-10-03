@@ -37,8 +37,12 @@ def data_agent_app():
     from starlette.middleware import Middleware
     from .middleware import CustomTitleMiddleware
 
+    # Get the dynamic Modal URL for this deployment
+    agent_url = data_agent_app.get_web_url()
+
     a2a_app = data_transformation_agent.to_a2a(
         name="Data Transformation Agent",
+        url=agent_url,
         description="An AI agent specialized in data analysis, processing, visualization, and insights generation from various data sources",
         middleware=[Middleware(CustomTitleMiddleware, agent_name="Data Transformation Agent")]
     )
@@ -67,6 +71,7 @@ if __name__ == "__main__":
 
     a2a_app = data_transformation_agent.to_a2a(
         name="Data Transformation Agent",
+        url="http://localhost:8004",
         middleware=[Middleware(CustomTitleMiddleware, agent_name="Data Transformation Agent")]
     )
 

@@ -42,8 +42,12 @@ def research_agent_app():
     from starlette.middleware import Middleware
     from .middleware import CustomTitleMiddleware
 
+    # Get the dynamic Modal URL for this deployment
+    agent_url = research_agent_app.get_web_url()
+
     a2a_app = research_agent.to_a2a(
         name="Research Agent",
+        url=agent_url,
         description="An AI agent specialized in research tasks, information gathering, and analysis using advanced search and synthesis capabilities",
         middleware=[Middleware(CustomTitleMiddleware, agent_name="Research Agent")]
     )
@@ -74,6 +78,7 @@ if __name__ == "__main__":
 
     a2a_app = research_agent.to_a2a(
         name="Research Agent",
+        url="http://localhost:8002",
         middleware=[Middleware(CustomTitleMiddleware, agent_name="Research Agent")]
     )
 

@@ -37,8 +37,12 @@ def code_agent_app():
     from starlette.middleware import Middleware
     from .middleware import CustomTitleMiddleware
 
+    # Get the dynamic Modal URL for this deployment
+    agent_url = code_agent_app.get_web_url()
+
     a2a_app = code_agent.to_a2a(
         name="Code Agent",
+        url=agent_url,
         description="An AI agent specialized in code generation, review, debugging, and software development assistance",
         middleware=[Middleware(CustomTitleMiddleware, agent_name="Code Agent")]
     )
@@ -67,6 +71,7 @@ if __name__ == "__main__":
 
     a2a_app = code_agent.to_a2a(
         name="Code Agent",
+        url="http://localhost:8003",
         middleware=[Middleware(CustomTitleMiddleware, agent_name="Code Agent")]
     )
 

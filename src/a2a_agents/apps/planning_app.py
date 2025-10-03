@@ -33,10 +33,14 @@ def planning_agent_app():
 
     config.setup_api_keys()
 
-    # Get the base A2A app
+    # Get the base A2A app with custom title middleware
+    from starlette.middleware import Middleware
+    from .middleware import CustomTitleMiddleware
+
     a2a_app = planning_agent.to_a2a(
         name="Planning Agent",
-        description="An AI agent specialized in project planning, task management, strategic planning, and workflow optimization"
+        description="An AI agent specialized in project planning, task management, strategic planning, and workflow optimization",
+        middleware=[Middleware(CustomTitleMiddleware, agent_name="Planning Agent")]
     )
 
     # Add root redirect to /docs
@@ -57,8 +61,14 @@ if __name__ == "__main__":
     print("🧠 Starting Planning Agent locally on port 8005...")
     config.setup_api_keys()
 
-    # Get the A2A app and add root redirect
-    a2a_app = planning_agent.to_a2a(name="Planning Agent")
+    # Get the A2A app with custom title middleware
+    from starlette.middleware import Middleware
+    from a2a_agents.apps.middleware import CustomTitleMiddleware
+
+    a2a_app = planning_agent.to_a2a(
+        name="Planning Agent",
+        middleware=[Middleware(CustomTitleMiddleware, agent_name="Planning Agent")]
+    )
 
     async def redirect_to_docs(request):
         return RedirectResponse(url="/docs")

@@ -38,10 +38,14 @@ def research_agent_app():
 
     config.setup_api_keys()
 
-    # Get the base A2A app
+    # Get the base A2A app with custom title middleware
+    from starlette.middleware import Middleware
+    from .middleware import CustomTitleMiddleware
+
     a2a_app = research_agent.to_a2a(
         name="Research Agent",
-        description="An AI agent specialized in research tasks, information gathering, and analysis using advanced search and synthesis capabilities"
+        description="An AI agent specialized in research tasks, information gathering, and analysis using advanced search and synthesis capabilities",
+        middleware=[Middleware(CustomTitleMiddleware, agent_name="Research Agent")]
     )
 
     # Add root redirect to /docs
@@ -64,8 +68,14 @@ if __name__ == "__main__":
     print("🕵️‍♂️ Starting Research Agent locally on port 8002...")
     config.setup_api_keys()
 
-    # Get the A2A app and add root redirect
-    a2a_app = research_agent.to_a2a(name="Research Agent")
+    # Get the A2A app with custom title middleware
+    from starlette.middleware import Middleware
+    from a2a_agents.apps.middleware import CustomTitleMiddleware
+
+    a2a_app = research_agent.to_a2a(
+        name="Research Agent",
+        middleware=[Middleware(CustomTitleMiddleware, agent_name="Research Agent")]
+    )
 
     async def redirect_to_docs(request):
         return RedirectResponse(url="/docs")

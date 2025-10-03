@@ -33,10 +33,14 @@ def code_agent_app():
 
     config.setup_api_keys()
 
-    # Get the base A2A app
+    # Get the base A2A app with custom title middleware
+    from starlette.middleware import Middleware
+    from .middleware import CustomTitleMiddleware
+
     a2a_app = code_agent.to_a2a(
         name="Code Agent",
-        description="An AI agent specialized in code generation, review, debugging, and software development assistance"
+        description="An AI agent specialized in code generation, review, debugging, and software development assistance",
+        middleware=[Middleware(CustomTitleMiddleware, agent_name="Code Agent")]
     )
 
     # Add root redirect to /docs
@@ -57,8 +61,14 @@ if __name__ == "__main__":
     print("💻 Starting Code Agent locally on port 8003...")
     config.setup_api_keys()
 
-    # Get the A2A app and add root redirect
-    a2a_app = code_agent.to_a2a(name="Code Agent")
+    # Get the A2A app with custom title middleware
+    from starlette.middleware import Middleware
+    from a2a_agents.apps.middleware import CustomTitleMiddleware
+
+    a2a_app = code_agent.to_a2a(
+        name="Code Agent",
+        middleware=[Middleware(CustomTitleMiddleware, agent_name="Code Agent")]
+    )
 
     async def redirect_to_docs(request):
         return RedirectResponse(url="/docs")
